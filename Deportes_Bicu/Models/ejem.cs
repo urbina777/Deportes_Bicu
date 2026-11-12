@@ -2,7 +2,7 @@
 {
     public class ejem
     {
-        wwww
+       public int Id { get; set; }
 
     }
 }
