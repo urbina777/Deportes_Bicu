@@ -2,7 +2,7 @@
 {
     public class ejem
     {
-        deco
+        wwww
 
     }
 }
