@@ -4,5 +4,7 @@
     {
        public int Id { get; set; }
 
+        string nombre {  get; set; }
+
     }
 }
