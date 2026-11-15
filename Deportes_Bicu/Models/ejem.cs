@@ -6,5 +6,7 @@
 
         string nombre {  get; set; }
 
+        string apellido {get; set; }
+
     }
 }
