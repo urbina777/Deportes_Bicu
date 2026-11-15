@@ -6,9 +6,10 @@
 
         string nombre {  get; set; }
 
-        string apellido {get; set; }
-
         public int edad {  get; set; }
+
+        string apellido { get; set; } = string.Empty;
+
 
     }
 }
