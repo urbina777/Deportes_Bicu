@@ -6,5 +6,7 @@
 
         string nombre {  get; set; }
 
+        string aoellido { get; set; } = string.Empty;
+
     }
 }
