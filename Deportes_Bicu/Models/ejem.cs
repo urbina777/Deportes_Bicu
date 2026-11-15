@@ -8,5 +8,7 @@
 
         string apellido {get; set; }
 
+        public int edad {  get; set; }
+
     }
 }
