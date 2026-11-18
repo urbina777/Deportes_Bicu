@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Deportes_Bicu.Models;
 
-namespace Deportes_Bicu.Data
+namespace PracticaWeb1.Data
 {
     public class AppDbContext(DbContextOptions<AppDbContext>options):DbContext(options)
     {
