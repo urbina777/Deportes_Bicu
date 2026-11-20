@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Evaluaciones físicas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Evaluaciones físicas</h1>
+        <p class="text-muted mb-0">Peso y estatura de los estudiantes a lo largo del tiempo</p>
+    </div>
+    @if (User.HasPermision("evaluacion.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevaEvaluacion">
+            <i class="fa-solid fa-plus me-1"></i>Nueva Evaluación
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="evaluacionTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Estudiante</th>
+                    <th>Peso (kg)</th>
+                    <th>Estatura (m)</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="evaluacionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="evaluacionModalTitle">Evaluación física</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="evaluacionForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="evaluacionId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="evaluacionEstudianteId">Estudiante</label>
+                        <select id="evaluacionEstudianteId" name="evaluacionEstudianteId" class="form-select">
+                            <option value="">Seleccione un estudiante</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="evaluacionFecha">Fecha</label>
+                            <input type="date" id="evaluacionFecha" name="evaluacionFecha" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="evaluacionPeso">Peso (kg)</label>
+                            <input type="number" step="0.01" min="0" id="evaluacionPeso" name="evaluacionPeso" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="evaluacionEstatura">Estatura (m)</label>
+                            <input type="number" step="0.01" min="0" id="evaluacionEstatura" name="evaluacionEstatura" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="evaluacionObservaciones">Observaciones <span class="text-muted">(opcional)</span></label>
+                        <textarea id="evaluacionObservaciones" name="evaluacionObservaciones" class="form-control" rows="3" maxlength="250"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarEvaluacion">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.evaluacionConfig = {
+            canUpdate: @User.HasPermision("evaluacion.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("evaluacion.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/evaluacion.js" asp-append-version="true"></script>
+}

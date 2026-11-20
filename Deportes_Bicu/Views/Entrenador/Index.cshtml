@@ -1,0 +1,140 @@
+﻿@{
+    ViewData["Title"] = "Entrenadores";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Entrenadores</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if (User.HasPermision("entrenador.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevoEntrenador">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo Entrenador
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="entrenadorTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Código</th>
+                    <th>Correo</th>
+                    <th>Usuario</th>
+                    <th>Deportes</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="entrenadorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="entrenadorModalTitle">Entrenador</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="entrenadorForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="entrenadorId" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="entrenadorUsuarioId">Cuenta de usuario</label>
+                            <select id="entrenadorUsuarioId" name="entrenadorUsuarioId" class="form-select">
+                                <option value="">Seleccione una cuenta de usuario</option>
+                            </select>
+                            <div class="form-text">Solo se muestran las cuentas que todavía no tienen perfil de entrenador.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorNombre">Nombre</label>
+                            <input type="text" id="entrenadorNombre" name="entrenadorNombre" class="form-control" maxlength="50" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorApellido">Apellido</label>
+                            <input type="text" id="entrenadorApellido" name="entrenadorApellido" class="form-control" maxlength="50" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorCedula">Cédula</label>
+                            <input type="text" id="entrenadorCedula" name="entrenadorCedula" class="form-control" maxlength="20" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorCarnet">Código institucional</label>
+                            <input type="text" id="entrenadorCarnet" name="entrenadorCarnet" class="form-control" maxlength="30" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorCorreo">Correo</label>
+                            <input type="text" id="entrenadorCorreo" name="entrenadorCorreo" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="entrenadorTelefono">Teléfono <span class="text-muted">(opcional)</span></label>
+                            <input type="text" id="entrenadorTelefono" name="entrenadorTelefono" class="form-control" maxlength="20" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarEntrenador">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deportesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deportesModalTitle">Deportes asignados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @if (User.HasPermision("entrenador.asignar"))
+                {
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <select id="deporteAsignarId" class="form-select">
+                                <option value="">Seleccione un deporte</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-success" id="btnAsignarDeporte">
+                                <i class="fa-solid fa-plus me-1"></i>Agregar
+                            </button>
+                        </div>
+                    </div>
+                }
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Deporte</th><th>Estado</th><th></th></tr>
+                    </thead>
+                    <tbody id="deportesAsignados"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css"/>
+}
+
+@section Scripts{
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.entrenadorConfig = {
+            canUpdate: @User.HasPermision("entrenador.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("entrenador.borrar").ToString().ToLower(),
+            canAsignar: @User.HasPermision("entrenador.asignar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/entrenador.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "Horarios";
+    var asignaciones = ViewBag.Asignaciones as IReadOnlyList<Deportes_Bicu.DTOS.OpcionDto> ?? Array.Empty<Deportes_Bicu.DTOS.OpcionDto>();
+    var instalaciones = ViewBag.Instalaciones as IReadOnlyList<Deportes_Bicu.DTOS.OpcionDto> ?? Array.Empty<Deportes_Bicu.DTOS.OpcionDto>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Horarios</h1>
+        <p class="text-muted mb-0">Días y horas de entrenamiento por deporte, entrenador e instalación</p>
+    </div>
+    @if (User.HasPermision("horario.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevoHorario">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo Horario
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="horarioTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Día</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Deporte</th>
+                    <th>Entrenador</th>
+                    <th>Instalación</th>
+                    <th>Inscritos / Cupo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="horarioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="horarioModalTitle">Horario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="horarioForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="horarioId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="horarioEntrenadorDeporteId">Deporte y entrenador</label>
+                        <select id="horarioEntrenadorDeporteId" name="horarioEntrenadorDeporteId" class="form-select">
+                            <option value="">Seleccione una asignación</option>
+                            @foreach (var a in asignaciones)
+                            {
+                                <option value="@a.Id">@a.Texto</option>
+                            }
+                        </select>
+                        <div class="form-text">Si falta una opción, asigne primero el deporte al entrenador.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="horarioInstalacionId">Instalación</label>
+                        <select id="horarioInstalacionId" name="horarioInstalacionId" class="form-select">
+                            <option value="">Seleccione una instalación</option>
+                            @foreach (var i in instalaciones)
+                            {
+                                <option value="@i.Id">@i.Texto</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="horarioDia">Día</label>
+                            <select id="horarioDia" name="horarioDia" class="form-select">
+                                <option value="">Seleccione</option>
+                                @foreach (var d in Deportes_Bicu.Helper.Estados.Dias)
+                                {
+                                    <option value="@d">@d</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="horarioHoraInicio">Hora de inicio</label>
+                            <input type="time" id="horarioHoraInicio" name="horarioHoraInicio" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="horarioHoraFin">Hora de fin</label>
+                            <input type="time" id="horarioHoraFin" name="horarioHoraFin" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarHorario">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.horarioConfig = {
+            canUpdate: @User.HasPermision("horario.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("horario.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/horario.js" asp-append-version="true"></script>
+}

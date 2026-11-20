@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Inscripciones";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Inscripciones</h1>
+        <p class="text-muted mb-0">Inscripciones de estudiantes a deportes por período</p>
+    </div>
+    @if (User.HasPermision("inscripcion.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevaInscripcion">
+            <i class="fa-solid fa-plus me-1"></i>Nueva Inscripción
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="inscripcionTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Estudiante</th>
+                    <th>Deporte</th>
+                    <th>Categoría</th>
+                    <th>Período</th>
+                    <th>Horarios</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@if (User.HasPermision("inscripcion.crear"))
+{
+    <partial name="_InscripcionModal" model="@true" />
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.inscripcionConfig = {
+            canCreate: @User.HasPermision("inscripcion.crear").ToString().ToLower(),
+            canUpdate: @User.HasPermision("inscripcion.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("inscripcion.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/inscripcion-form.js" asp-append-version="true"></script>
+    <script src="~/js/inscripcion.js" asp-append-version="true"></script>
+}

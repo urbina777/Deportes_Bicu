@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "Asistencias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Asistencias</h1>
+        <p class="text-muted mb-0">Registro de asistencia por inscripción y fecha</p>
+    </div>
+    @if (User.HasPermision("asistencia.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevaAsistencia">
+            <i class="fa-solid fa-plus me-1"></i>Nueva Asistencia
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="asistenciaTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Estudiante</th>
+                    <th>Deporte</th>
+                    <th>Período</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="asistenciaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="asistenciaModalTitle">Asistencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="asistenciaForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="asistenciaId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="asistenciaInscripcionId">Inscripción</label>
+                        <select id="asistenciaInscripcionId" name="asistenciaInscripcionId" class="form-select">
+                            <option value="">Seleccione una inscripción</option>
+                        </select>
+                        <div class="form-text">La fecha debe estar dentro del período y caer en un día de entrenamiento de la inscripción.</div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="asistenciaFecha">Fecha</label>
+                            <input type="date" id="asistenciaFecha" name="asistenciaFecha" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="asistenciaEstado">Estado</label>
+                            <select id="asistenciaEstado" name="asistenciaEstado" class="form-select">
+                                <option value="">Seleccione</option>
+                                @foreach (var e in Deportes_Bicu.Helper.Estados.Asistencia)
+                                {
+                                    <option value="@e">@e</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarAsistencia">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.asistenciaConfig = {
+            canCreate: @User.HasPermision("asistencia.crear").ToString().ToLower(),
+            canUpdate: @User.HasPermision("asistencia.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("asistencia.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/asistencia.js" asp-append-version="true"></script>
+}

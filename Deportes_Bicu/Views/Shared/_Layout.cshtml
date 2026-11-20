@@ -1,35 +1,61 @@
-﻿<!DOCTYPE html>
+﻿@if(Context?.User?.Identity?.IsAuthenticated == false)
+{
+    <script>
+        window.location.href="/Auth/Login";
+    </script>
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Deportes_Bicu</title>
+    <title>@ViewData["Title"] - Deportes Universitarios</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/inter/400.css" />
+    <link rel="stylesheet" href="~/lib/inter/500.css" />
+    <link rel="stylesheet" href="~/lib/inter/600.css" />
+    <link rel="stylesheet" href="~/lib/inter/700.css" />
     <link rel="stylesheet" href="~/Deportes_Bicu.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="app-topbar">
+            <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <a class="app-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/logo.svg" alt="Escudo BICU" width="66" height="55" />
+                    <span>Deportes Universitarios</span>
+                </a>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" id="refreshSessionBtn" class="btn btn-warning" title="Actualizar permisos del JWT">
+                        <i class="fa-solid fa-rotate me-1"></i> Actualizar sesión
+                    </button>
+                    <button id="logoutBtn" class="btn btn-success btn-logout">Cerrar Sesion</button>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-sm navbar-dark app-nav">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Deportes_Bicu</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @await Component.InvokeAsync("Navigation")
                     </ul>
                 </div>
             </div>
         </nav>
+        <div class="app-stripe"></div>
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -37,14 +63,88 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer">
         <div class="container">
-            &copy; 2026 - Deportes_Bicu - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - Sistema de Inscripciones Deportivas Universitarias - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/axios/dist/axios.min.js"></script>
+    <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/common.js" asp-append-version="true"></script>
+    <script>
+        async function refreshSession(showAlert = true) {
+            try {
+                await axios.post('/Auth/RefreshToken');
+                if (showAlert) {
+                    await Swal.fire({
+                        title: 'Sesión actualizada',
+                        text: 'Tus permisos del JWT fueron sincronizados.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                }
+                return true;
+            } catch {
+                if (showAlert) {
+                    Swal.fire('Error', 'No se pudo actualizar la sesión. Vuelve a iniciar sesión.', 'error');
+                }
+                return false;
+            }
+        }
+
+        document.getElementById('refreshSessionBtn')?.addEventListener('click', () => refreshSession(true));
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            const confirmLogout = await Swal.fire({
+                title: '¿Cerrar sesión?',
+                text: 'Tu sesión actual se cerrará.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cerrar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6'
+            });
+
+            if (!confirmLogout.isConfirmed) return;
+
+            try {
+                const response = await axios.post('/Auth/Logout');
+
+                if (response.data.success) {
+                    await Swal.fire({
+                        title: 'Sesión cerrada',
+                        text: response.data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#3085d6'
+                    });
+
+                    window.location.href = '/Home/Index';
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo cerrar la sesión.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Ocurrió un error al intentar cerrar la sesión.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

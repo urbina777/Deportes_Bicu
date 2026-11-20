@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Carreras";
+    var facultades = ViewBag.Facultades as IReadOnlyList<Deportes_Bicu.DTOS.FacultadTableDto> ?? [];
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Carreras</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if (User.HasPermision("carrera.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevaCarrera">
+            <i class="fa-solid fa-plus me-1"></i>Nueva Carrera
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="carreraTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Facultad</th>
+                    <th>Estudiantes</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="carreraModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="carreraModalTitle">Carrera</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="carreraForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="carreraId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="carreraNombre">Nombre</label>
+                        <input type="text" id="carreraNombre" name="carreraNombre" class="form-control" maxlength="100" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="carreraFacultadId">Facultad</label>
+                        <select id="carreraFacultadId" name="carreraFacultadId" class="form-select">
+                            <option value="">Seleccione una facultad</option>
+                            @foreach (var facultad in facultades)
+                            {
+                                <option value="@facultad.Id">@facultad.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarCarrera">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.carreraConfig = {
+            canUpdate: @User.HasPermision("carrera.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("carrera.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/carrera.js" asp-append-version="true"></script>
+}

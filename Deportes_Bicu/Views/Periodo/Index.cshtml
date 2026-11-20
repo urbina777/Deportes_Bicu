@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Períodos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Períodos</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if (User.HasPermision("periodo.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevoPeriodo">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo Período
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="periodoTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Fecha de inicio</th>
+                    <th>Fecha de fin</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="periodoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="periodoModalTitle">Período</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="periodoForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="periodoId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="periodoNombre">Nombre</label>
+                        <input type="text" id="periodoNombre" name="periodoNombre" class="form-control" maxlength="80" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="periodoFechaInicio">Fecha de inicio</label>
+                        <input type="date" id="periodoFechaInicio" name="periodoFechaInicio" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="periodoFechaFin">Fecha de fin</label>
+                        <input type="date" id="periodoFechaFin" name="periodoFechaFin" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="periodoEstado">Estado</label>
+                        <select id="periodoEstado" name="periodoEstado" class="form-select">
+                            <option value="">Seleccione una opción</option>
+                            @foreach (var op in Deportes_Bicu.Helper.Estados.Periodo)
+                            {
+                                <option value="@op">@op</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarPeriodo">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.periodoConfig = {
+
+            canUpdate: @User.HasPermision("periodo.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("periodo.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/periodo.js" asp-append-version="true"></script>
+}
