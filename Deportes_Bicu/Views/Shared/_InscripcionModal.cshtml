@@ -1,0 +1,57 @@
+﻿@model bool
+
+<div class="modal fade" id="inscripcionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva inscripción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="inscripcionForm" novalidate>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        @if (Model)
+                        {
+                            <div class="col-12">
+                                <label class="form-label" for="inscEstudianteId">Estudiante</label>
+                                <select id="inscEstudianteId" name="inscEstudianteId" class="form-select">
+                                    <option value="">Seleccione un estudiante</option>
+                                </select>
+                            </div>
+                        }
+                        <div class="col-md-6">
+                            <label class="form-label" for="inscDeporteId">Deporte</label>
+                            <select id="inscDeporteId" name="inscDeporteId" class="form-select">
+                                <option value="">Seleccione un deporte</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="inscPeriodoId">Período</label>
+                            <select id="inscPeriodoId" name="inscPeriodoId" class="form-select">
+                                <option value="">Seleccione un período</option>
+                            </select>
+                            <div class="form-text">Solo períodos abiertos.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="inscCategoriaId">Categoría</label>
+                            <select id="inscCategoriaId" name="inscCategoriaId" class="form-select">
+                                <option value="">Seleccione primero un deporte</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Horarios</label>
+                            <div id="inscHorarios" class="border rounded p-2 bg-light" style="min-height: 3rem;">
+                                <span class="text-muted">Seleccione deporte y período para ver los horarios.</span>
+                            </div>
+                            <div class="text-danger small mt-1 d-none" id="inscHorariosError">Seleccione al menos un horario.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarInscripcion">Inscribir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

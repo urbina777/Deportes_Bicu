@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Estudiantes";
+    var carreras = ViewBag.Carreras as IReadOnlyList<Deportes_Bicu.DTOS.CarreraTableDto> ?? [];
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Estudiante</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if(User.HasPermision("estudiante.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevoEstudiante">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo Estudiante
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="estudianteTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Código</th>
+                    <th>Correo</th>
+                    <th>Carrera</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="estudianteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="estudianteModalTitle">Estudiante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="estudianteForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="estudianteId" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="estudianteUsuarioId">Cuenta de usuario</label>
+                            <select id="estudianteUsuarioId" name="estudianteUsuarioId" class="form-select">
+                                <option value="">Seleccione una cuenta de usuario</option>
+                            </select>
+                            <div class="form-text">Solo se muestran las cuentas que todavía no tienen perfil de estudiante.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteNombre">Nombre</label>
+                            <input type="text" id="estudianteNombre" name="estudianteNombre" class="form-control" maxlength="50" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteApellido">Apellido</label>
+                            <input type="text" id="estudianteApellido" name="estudianteApellido" class="form-control" maxlength="50" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteCedula">Cédula</label>
+                            <input type="text" id="estudianteCedula" name="estudianteCedula" class="form-control" maxlength="20" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteCarnet">Código institucional</label>
+                            <input type="text" id="estudianteCarnet" name="estudianteCarnet" class="form-control" maxlength="30" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteCorreo">Correo</label>
+                            <input type="text" id="estudianteCorreo" name="estudianteCorreo" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estudianteTelefono">Teléfono <span class="text-muted">(opcional)</span></label>
+                            <input type="text" id="estudianteTelefono" name="estudianteTelefono" class="form-control" maxlength="20" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="estudianteCarreraId">Carrera</label>
+                            <select id="estudianteCarreraId" name="estudianteCarreraId" class="form-select">
+                                <option value="">Seleccione una carrera</option>
+                                @foreach (var grupo in carreras.GroupBy(c => c.FacultadNombre))
+                                {
+                                    <optgroup label="@grupo.Key">
+                                        @foreach (var carrera in grupo)
+                                        {
+                                            <option value="@carrera.Id">@carrera.Nombre</option>
+                                        }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarEstudiante">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css"/>
+}
+
+@section Scripts{
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.estudiantesConfig = {
+            canUpdate: @User.HasPermision("estudiante.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("estudiante.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/estudiante.js" asp-append-version="true"></script>
+}

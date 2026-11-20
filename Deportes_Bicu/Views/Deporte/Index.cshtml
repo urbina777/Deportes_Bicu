@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Deportes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Deportes</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if (User.HasPermision("deporte.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevoDeporte">
+            <i class="fa-solid fa-plus me-1"></i>Nuevo Deporte
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="deporteTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="deporteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deporteModalTitle">Deporte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="deporteForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="deporteId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="deporteNombre">Nombre</label>
+                        <input type="text" id="deporteNombre" name="deporteNombre" class="form-control" maxlength="80" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="deporteDescripcion">Descripción <span class="text-muted">(opcional)</span></label>
+                        <input type="text" id="deporteDescripcion" name="deporteDescripcion" class="form-control" maxlength="200" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="deporteEstado">Estado</label>
+                        <select id="deporteEstado" name="deporteEstado" class="form-select">
+                            <option value="">Seleccione una opción</option>
+                            @foreach (var op in Deportes_Bicu.Helper.Estados.Deporte)
+                            {
+                                <option value="@op">@op</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarDeporte">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="categoriasModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoriasModalTitle">Categorías</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                @if (User.HasPermision("deporte.asignar"))
+                {
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <select id="categoriaAsignarId" class="form-select">
+                                <option value="">Seleccione una categoría</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-success" id="btnAsignarCategoria">
+                                <i class="fa-solid fa-plus me-1"></i>Agregar
+                            </button>
+                        </div>
+                    </div>
+                }
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Categoría</th><th>Edades</th><th></th></tr>
+                    </thead>
+                    <tbody id="categoriasAsignadas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.deporteConfig = {
+            canAsignar: @User.HasPermision("deporte.asignar").ToString().ToLower(),
+            canUpdate: @User.HasPermision("deporte.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("deporte.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/deporte.js" asp-append-version="true"></script>
+}

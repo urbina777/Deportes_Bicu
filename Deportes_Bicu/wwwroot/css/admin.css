@@ -1,0 +1,20 @@
+.admin-card {
+    border: 2px solid #1f1f66;
+    box-shadow: none;
+    border-radius: 0;
+    background: #fff;
+}
+
+.admin-header h1 {
+    font-weight: 700;
+}
+
+.is-valid {
+    border-color: #339933 !important;
+}
+
+.just-validate-error-label {
+    color: #b3261e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}

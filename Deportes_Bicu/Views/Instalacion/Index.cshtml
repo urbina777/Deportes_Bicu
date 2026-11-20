@@ -1,0 +1,93 @@
+﻿@{
+    ViewData["Title"] = "Instalaciones";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Instalaciones</h1>
+        <p class="text-muted mb-0">Gestión de datos con DataTable</p>
+    </div>
+    @if (User.HasPermision("instalacion.crear"))
+    {
+        <button type="button" class="btn btn-success btn-sm" id="btnNuevaInstalacion">
+            <i class="fa-solid fa-plus me-1"></i>Nueva Instalación
+        </button>
+    }
+</div>
+
+<div class="card admin-card">
+    <div class="card-body">
+        <table id="instalacionTable" class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th>Capacidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="instalacionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="instalacionModalTitle">Instalación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="instalacionForm" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="instalacionId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="instalacionNombre">Nombre</label>
+                        <input type="text" id="instalacionNombre" name="instalacionNombre" class="form-control" maxlength="80" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="instalacionUbicacion">Ubicación <span class="text-muted">(opcional)</span></label>
+                        <input type="text" id="instalacionUbicacion" name="instalacionUbicacion" class="form-control" maxlength="150" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="instalacionCapacidad">Capacidad</label>
+                        <input type="number" id="instalacionCapacidad" name="instalacionCapacidad" class="form-control" min="1" max="10000" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="instalacionEstado">Estado</label>
+                        <select id="instalacionEstado" name="instalacionEstado" class="form-select">
+                            <option value="">Seleccione una opción</option>
+                            @foreach (var op in Deportes_Bicu.Helper.Estados.Instalacion)
+                            {
+                                <option value="@op">@op</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarInstalacion">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/just-validate/dist/just-validate.production.min.js"></script>
+    <script>
+        window.instalacionConfig = {
+
+            canUpdate: @User.HasPermision("instalacion.actualizar").ToString().ToLower(),
+            canDelete: @User.HasPermision("instalacion.borrar").ToString().ToLower()
+        };
+    </script>
+    <script src="~/js/instalacion.js" asp-append-version="true"></script>
+}

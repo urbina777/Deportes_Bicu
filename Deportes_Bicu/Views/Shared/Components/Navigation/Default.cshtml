@@ -1,0 +1,91 @@
+﻿@model IReadOnlyList<string>
+
+@{
+    bool Has(string p) => Model.Any(x => string.Equals(x, p, StringComparison.OrdinalIgnoreCase));
+    bool HasAny(params string[] perms) => perms.Any(Has);
+
+    var catalogos = new List<(string Perm, string Controller, string Texto)>
+    {
+        ("facultad.ver", "Facultad", "Facultades"),
+        ("carrera.ver", "Carrera", "Carreras"),
+        ("deporte.ver", "Deporte", "Deportes"),
+        ("categoria.ver", "CategoriaDeportiva", "Categorías deportivas"),
+        ("instalacion.ver", "Instalacion", "Instalaciones"),
+        ("periodo.ver", "Periodo", "Períodos"),
+    }.Where(x => Has(x.Perm)).ToList();
+
+    var personas = new List<(string Perm, string Controller, string Texto)>
+    {
+        ("estudiante.ver", "Estudiante", "Estudiantes"),
+        ("entrenador.ver", "Entrenador", "Entrenadores"),
+    }.Where(x => Has(x.Perm)).ToList();
+
+    var operacion = new List<(string Perm, string Controller, string Texto)>
+    {
+        ("horario.ver", "Horario", "Horarios"),
+        ("inscripcion.ver", "Inscripcion", "Inscripciones"),
+        ("asistencia.ver", "Asistencia", "Asistencias"),
+        ("evaluacion.ver", "EvaluacionFisica", "Evaluaciones físicas"),
+    }.Where(x => Has(x.Perm)).ToList();
+}
+
+@if (Has("portalestudiante.ver"))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="PortalEstudiante" asp-action="Index">
+            <i class="fa-solid fa-user-graduate me-1"></i> Mi portal
+        </a>
+    </li>
+}
+@if (Has("portalentrenador.ver"))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="PortalEntrenador" asp-action="Index">
+            <i class="fa-solid fa-person-running me-1"></i> Portal entrenador
+        </a>
+    </li>
+}
+@if (operacion.Count > 0)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Operación</a>
+        <ul class="dropdown-menu">
+            @foreach (var item in operacion)
+            {
+                <li><a class="dropdown-item" asp-controller="@item.Controller" asp-action="Index">@item.Texto</a></li>
+            }
+        </ul>
+    </li>
+}
+@if (personas.Count > 0)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Personas</a>
+        <ul class="dropdown-menu">
+            @foreach (var item in personas)
+            {
+                <li><a class="dropdown-item" asp-controller="@item.Controller" asp-action="Index">@item.Texto</a></li>
+            }
+        </ul>
+    </li>
+}
+@if (catalogos.Count > 0)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Catálogos</a>
+        <ul class="dropdown-menu">
+            @foreach (var item in catalogos)
+            {
+                <li><a class="dropdown-item" asp-controller="@item.Controller" asp-action="Index">@item.Texto</a></li>
+            }
+        </ul>
+    </li>
+}
+@if (HasAny("rol.ver", "permiso.ver", "usuario.ver"))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">
+            <i class="fa-solid fa-shield-halved me-1"></i> Administración
+        </a>
+    </li>
+}

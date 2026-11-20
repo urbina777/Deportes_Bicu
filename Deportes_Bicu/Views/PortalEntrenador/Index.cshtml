@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Mi portal";
+    var tienePerfil = (bool)(ViewBag.TienePerfil ?? false);
+}
+
+<div class="mb-4">
+    <h1 class="h3 mb-1">Portal del entrenador</h1>
+    <p class="text-muted mb-0">Sus deportes, horarios y registro de asistencia</p>
+</div>
+
+@if (!tienePerfil)
+{
+    <div class="alert alert-warning">
+        Su cuenta todavía no tiene un perfil de entrenador. Solicite al personal administrativo que lo registre.
+    </div>
+}
+else
+{
+    <div class="card admin-card mb-4">
+        <div class="card-body" id="miPerfil">
+            <span class="text-muted">Cargando datos...</span>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-3" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabHorarios" type="button">Mis horarios</button></li>
+        @if (User.HasPermision("asistencia.registrar"))
+        {
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabTomar" type="button">Tomar asistencia</button></li>
+        }
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabHistorial" type="button">Historial</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="tabHorarios">
+            <div class="card admin-card"><div class="card-body">
+                <table id="misHorariosTable" class="table table-striped table-hover w-100">
+                    <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Deporte</th><th>Instalación</th></tr></thead>
+                </table>
+            </div></div>
+        </div>
+
+        @if (User.HasPermision("asistencia.registrar"))
+        {
+            <div class="tab-pane fade" id="tabTomar">
+                <div class="card admin-card"><div class="card-body">
+                    <div class="row g-3 align-items-end mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="sesionHorario">Horario</label>
+                            <select id="sesionHorario" class="form-select">
+                                <option value="">Seleccione un horario</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="sesionFecha">Fecha</label>
+                            <input type="date" id="sesionFecha" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" id="btnCargarLista">Cargar lista</button>
+                        </div>
+                    </div>
+                    <div class="form-text mb-3">La fecha debe ser un día igual al del horario y no puede ser futura. Los estudiantes sin estado no se guardan.</div>
+                    <div id="sesionLista" class="d-none">
+                        <table class="table table-sm align-middle">
+                            <thead class="table-light"><tr><th>Estudiante</th><th>Código</th><th style="width: 220px;">Asistencia</th></tr></thead>
+                            <tbody id="sesionInscritos"></tbody>
+                        </table>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-success" id="btnGuardarSesion"><i class="fa-solid fa-floppy-disk me-1"></i>Guardar asistencia</button>
+                        </div>
+                    </div>
+                </div></div>
+            </div>
+        }
+
+        <div class="tab-pane fade" id="tabHistorial">
+            <div class="card admin-card"><div class="card-body">
+                <table id="historialTable" class="table table-striped table-hover w-100">
+                    <thead><tr><th>Fecha</th><th>Estudiante</th><th>Deporte</th><th>Período</th><th>Estado</th></tr></thead>
+                </table>
+            </div></div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables-bs5/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    @if (tienePerfil)
+    {
+        <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+        <script src="~/lib/datatables-bs5/js/dataTables.bootstrap5.min.js"></script>
+        <script>
+            window.portalEntrenadorConfig = {
+                canRegistrar: @User.HasPermision("asistencia.registrar").ToString().ToLower(),
+                estados: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Deportes_Bicu.Helper.Estados.Asistencia))
+            };
+        </script>
+        <script src="~/js/portal-entrenador.js" asp-append-version="true"></script>
+    }
+}
